@@ -2,10 +2,10 @@ import numpy as np
 
 
 def circles(x, need_hessian=False):
-    Q = np.array([[1,0],[0,1]])
-    f = 0.5 * np.matmul(np.matmul(x.transpose(), Q), x)
-    g = np.matmul(Q, x)
-    h = Q if need_hessian else None
+    Q = np.array([[1, 0], [0, 1]])  # Identity matrix
+    f = 0.5 * (x @ Q @ x)  # Function value (scalar)
+    g = Q @ x  # Gradient
+    h = Q if need_hessian else None  # Hessian if needed
     return f, g, h
 
 
@@ -43,7 +43,7 @@ def rosenbrock(x, need_hessian=False):
 def linear(x, need_hessian=False):
     a = np.array([1, 2])
     f = np.matmul(a.transpose(), x)
-    g = a.transpose()
+    g = a
     h = np.zeros((2, 2)) if need_hessian else None
     return f, g, h
 

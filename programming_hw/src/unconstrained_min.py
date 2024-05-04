@@ -11,6 +11,7 @@ class LineSearchMinimization:
         x = x0
         x_history = [x0]
         obj_values = []
+        epsilon = 1e-6
 
         for iteration in range(max_iter):
             f_x, g_x, h_x = f(x, True)
@@ -23,6 +24,9 @@ class LineSearchMinimization:
                     return x, f_x, x_history, obj_values, True
 
             if self.method == "Newton":
+                regularized_hessian = h_x + epsilon * np.eye(h_x.shape[0])
+                h_x_inv = np.linalg.pinv(regularized_hessian)
+                p = np.linalg.solve(regularized_hessian, -g_x)
                 p = np.linalg.solve(h_x, -g_x)
                 lambda_squared = np.matmul(p.transpose(), np.matmul(h_x, p))
                 if 0.5 * lambda_squared < obj_tol:
