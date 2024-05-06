@@ -1,40 +1,73 @@
+import warnings
 import numpy as np
 import matplotlib.pyplot as plt
-import warnings
 
 
-def plot_contours(f, title, xy_gd=None, xy_newton=None):
-    x = np.linspace(-5, 5, 100)
-    y = np.linspace(-5, 5, 100)
+def plot_contours(f, title, xy_gd=None, xy_newton=None, contour_levels=40, grid_size=300):
+    """
+    Plots contour lines for a given function `f` and overlays optional points
+    for gradient descent and Newton's method.
+    :param f: A callable function that takes a numpy array [x, y] and returns a scalar.
+    :param title: The title for the plot.
+    :param xy_gd: (Optional) List of gradient descent points [x, y].
+    :param xy_newton: (Optional) List of Newton's method points [x, y].
+    :param contour_levels: (Optional) Number of contour levels.
+    :param grid_size: (Optional) Number of points for the x and y axis.
+    """
+    if xy_gd is not None or xy_newton is not None:
+        all_points = []
+        if xy_gd is not None:
+            all_points.append(np.array(xy_gd))
+        if xy_newton is not None:
+            all_points.append(np.array(xy_newton))
+
+        combined_points = np.concatenate(all_points)
+        x_min, x_max = np.min(combined_points[:, 0]), np.max(combined_points[:, 0])
+        y_min, y_max = np.min(combined_points[:, 1]), np.max(combined_points[:, 1])
+
+        padding = 1
+        x_range = (x_min - padding, x_max + padding)
+        y_range = (y_min - padding, y_max + padding)
+    else:
+        if "linear" in title.lower():
+            x_range = (-100, 10)
+            y_range = (-200, 10)
+        else:
+            x_range = (-5, 5)
+            y_range = (-5, 5)
+
+    x = np.linspace(x_range[0], x_range[1], grid_size)
+    y = np.linspace(y_range[0], y_range[1], grid_size)
     X, Y = np.meshgrid(x, y)
-    Z = np.zeros(X.shape)
 
+    Z = np.zeros_like(X)
     for i in range(X.shape[0]):
         for j in range(X.shape[1]):
-            Z[i, j] = f(np.array([X[i, j], Y[i, j]], dtype=float), False)[0]
+            try:
+                function_value = f(np.array([X[i, j], Y[i, j]]))[0]
+                Z[i, j] = float(function_value)
+            except Exception as e:
+                raise ValueError(
+                    "Error in `plot_contours`: Ensure `f` returns a scalar value.") from e
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    CS = ax.contour(X, Y, Z, 20)
+    fig, ax = plt.subplots(figsize=(8, 6))
+    CS = ax.contour(X, Y, Z, levels=contour_levels, cmap='viridis')
+    ax.clabel(CS, inline=True, fontsize=8)
+
+    if xy_gd is not None:
+        xy_gd = np.array(xy_gd)
+        ax.plot(xy_gd[:, 0], xy_gd[:, 1], 'o-', label='Gradient Descent', color='red')
+
+    if xy_newton is not None:
+        xy_newton = np.array(xy_newton)
+        ax.plot(xy_newton[:, 0], xy_newton[:, 1], 'x-', label="Newton's Method", color='blue')
+
     ax.set_title(title)
     ax.set_xlabel("x")
     ax.set_ylabel("y")
+    ax.legend(loc='upper right')
 
-
-    if xy_gd is not None:
-        ax.plot(
-            [x[0] for x in xy_gd], [x[1] for x in xy_gd],
-            label="Gradient Descent",
-        )
-
-    if xy_newton is not None:
-        ax.plot(
-            [x[0] for x in xy_newton],
-            [x[1] for x in xy_newton],
-            label="Newton's Method",
-        )
-
-    ax.legend(["Gradient Descent", "Newton's Method"])
+    # Display the plot
     plt.show()
 
 
@@ -60,43 +93,3 @@ def plot_iterations(
 
     ax.legend()
     plt.show()
-
-
-def plot_feasible_set_2d(path_points):
-    d = np.linspace(-2, 4, 300)
-    x, y = np.meshgrid(d, d)
-    z = np.zeros(x.shape)
-    for i in range(x.shape[0]):
-        for j in range(x.shape[1]):
-            z[i, j] = 2 * x[i, j] + y[i, j]
-    plt.contourf(x, y, z, levels=[-10, 0, 10], colors=["b", "r"], alpha=0.2)
-
-    plt.plot(path_points[:, 0], path_points[:, 1],)
-    plt.xlabel("x1")
-    plt.ylabel("x2")
-    plt.title("Feasible Set and Path")
-    plt.show()
-
-
-def plot_feasible_set_3d(path_points):
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection="3d")
-
-        d = np.linspace(-2, 4, 300)
-        x, y = np.meshgrid(d, d)
-        z = np.zeros(x.shape)
-        for i in range(x.shape[0]):
-            for j in range(x.shape[1]):
-                z[i, j] = 2 * x[i, j] + y[i, j]
-        ax.plot_surface(x, y, z, alpha=0.2)
-
-        # plot the path
-        ax.plot(path_points[:, 0], path_points[:, 1], path_points[:, 2])
-        ax.set_xlabel("x1")
-        ax.set_ylabel("x2")
-        ax.set_zlabel("x3")
-        ax.set_title("Feasible Set and Path")
-        plt.show()
