@@ -2,10 +2,10 @@ import numpy as np
 
 
 def circles(x, need_hessian=False):
-    Q = np.array([[1, 0], [0, 1]])  # Identity matrix
-    f = 0.5 * (x @ Q @ x)  # Function value (scalar)
-    g = Q @ x  # Gradient
-    h = Q if need_hessian else None  # Hessian if needed
+    Q = np.array([[1, 0], [0, 1]])
+    f = 0.5 * (x @ Q @ x)
+    g = Q @ x
+    h = Q if need_hessian else None
     return f, g, h
 
 
@@ -70,3 +70,4 @@ def triangles(x, need_hessian=False):
         ]) if need_hessian else None
 
     return f, g, h
+

@@ -1,4 +1,3 @@
-import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -51,23 +50,21 @@ def plot_contours(f, title, xy_gd=None, xy_newton=None, contour_levels=40, grid_
                     "Error in `plot_contours`: Ensure `f` returns a scalar value.") from e
 
     fig, ax = plt.subplots(figsize=(8, 6))
-    CS = ax.contour(X, Y, Z, levels=contour_levels, cmap='viridis')
+    CS = ax.contour(X, Y, Z, levels=contour_levels, cmap="viridis")
     ax.clabel(CS, inline=True, fontsize=8)
 
     if xy_gd is not None:
         xy_gd = np.array(xy_gd)
-        ax.plot(xy_gd[:, 0], xy_gd[:, 1], 'o-', label='Gradient Descent', color='red')
+        ax.plot(xy_gd[:, 0], xy_gd[:, 1], "o-", label="Gradient Descent", color="red")
 
     if xy_newton is not None:
         xy_newton = np.array(xy_newton)
-        ax.plot(xy_newton[:, 0], xy_newton[:, 1], 'x-', label="Newton's Method", color='blue')
+        ax.plot(xy_newton[:, 0], xy_newton[:, 1], "x-", label="Newton's Method", color="blue")
 
     ax.set_title(title)
     ax.set_xlabel("x")
     ax.set_ylabel("y")
-    ax.legend(loc='upper right')
-
-    # Display the plot
+    ax.legend(loc="upper right")
     plt.show()
 
 
@@ -78,6 +75,15 @@ def plot_iterations(
         label_1=None,
         label_2=None,
 ):
+    """
+    Plots the objective function values over iterations for two methods.
+    :param title:
+    :param obj_values_1:
+    :param obj_values_2:
+    :param label_1:
+    :param label_2:
+    :return:
+    """
     fig, ax = plt.subplots()
     ax.set_title(title)
     ax.set_xlabel("Iteration")
