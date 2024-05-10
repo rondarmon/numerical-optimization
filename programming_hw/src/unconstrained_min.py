@@ -61,10 +61,10 @@ class LineSearchMinimization:
     def __wolfe(self, f, p, x):
         alpha = 1.0
         f_x_0 = f(x, False)[0]
-        dot_product_f_x_0 = np.dot(f(x, False)[1], p)
+        dot_grad = np.dot(f(x, False)[1], p)
         while (f(x + alpha * p, False)[0] >
-               f_x_0 + self.WOLFE_COND_CONST * alpha * dot_product_f_x_0):
+               f_x_0 + self.WOLFE_COND_CONST * alpha * dot_grad):
             alpha *= self.BACKTRACKING_CONST
-            # if alpha < 1e-6:
-            #     break
+            if alpha < 1e-6:
+                break
         return alpha
