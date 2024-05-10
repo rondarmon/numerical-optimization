@@ -16,8 +16,8 @@ from tests.examples import (
 INITIAL_POINT = np.array([1, 1]).transpose()
 ROSENBROCK_INITIAL_POINT = np.array([-1, 2], dtype=float).transpose()
 LINE_SEARCH_METHOD = "wolfe"
-TOLERANCE = 10e-12
-STEP_SIZE = 10e-8
+TOLERANCE = 1e-12
+STEP_SIZE = 1e-8
 MAX_ITERATIONS = 100
 MAX_ITERATIONS_GD_ROSENBROCK = 10000
 MAX_ITERATIONS_NEWTON_ROSENBROCK = 100
