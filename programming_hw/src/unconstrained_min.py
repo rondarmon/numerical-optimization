@@ -5,7 +5,6 @@ class LineSearchMinimization:
 
     WOLFE_COND_CONST = 0.01
     BACKTRACKING_CONST = 0.5
-    EPSILON = 1e-6
 
     def __init__(self, method):
         self.method = method
@@ -14,7 +13,6 @@ class LineSearchMinimization:
         x = np.array(x0, dtype=float)
         x_history = [x0]
         obj_values = []
-        epsilon = self.EPSILON
 
         f_prev = float("inf")
         x_prev = x.copy()
@@ -30,11 +28,9 @@ class LineSearchMinimization:
                     return x, f_x, x_history, obj_values, True
 
             if self.method == "Newton":
-                regularized_hessian = h_x + epsilon * np.eye(h_x.shape[0])
-                h_x_inv = np.linalg.pinv(regularized_hessian)
+                h_x_inv = np.linalg.pinv(h_x)
                 p = -np.matmul(h_x_inv, g_x)
 
-                # newton decrement
                 lambda_squared = np.dot(p, np.dot(h_x, p))
                 if 0.5 * lambda_squared < obj_tol:
                     return x, f_x, x_history, obj_values, True
