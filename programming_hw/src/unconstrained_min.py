@@ -32,7 +32,7 @@ class LineSearchMinimization:
                     p = np.linalg.solve(h_x, -g_x)
                 except np.linalg.LinAlgError:
                     p = -g_x
-                    # fix
+#
 
 
 
