@@ -28,9 +28,18 @@ class LineSearchMinimization:
                     return x, f_x, x_history, obj_values, True
 
             if self.method == "Newton":
-                h_x_inv = np.linalg.pinv(h_x)
-                p = -np.matmul(h_x_inv, g_x)
+                try:
+                    p = np.linalg.solve(h_x, -g_x)
+                except np.linalg.LinAlgError:
+                    p = -g_x
+                    # fix
 
+
+
+
+                # h_x_inv = np.linalg.pinv(h_x)
+                # p = -np.matmul(h_x_inv, g_x)
+                #
                 lambda_squared = np.dot(p, np.dot(h_x, p))
                 if 0.5 * lambda_squared < obj_tol:
                     return x, f_x, x_history, obj_values, True
