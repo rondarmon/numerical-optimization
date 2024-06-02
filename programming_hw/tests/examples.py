@@ -71,3 +71,64 @@ def triangles(x, need_hessian=False):
 
     return f, g, h
 
+#
+def qp(x, need_hessian=False):
+    f = x[0] ** 2 + x[1] ** 2 + (x[2] + 1) ** 2
+    g = np.array([2 * x[0], 2 * x[1], 2 * x[2] + 2]).transpose()
+    h = np.array([[2, 0, 0], [0, 2, 0], [0, 0, 2]]) if need_hessian else None
+    return f, g, h
+
+
+def qp_ineq_constraint_1(x, need_hessian=False):
+    f = -x[0]
+    g = np.array([-1, 0, 0]).transpose()
+    h = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]]) if need_hessian else None
+    return f, g, h
+
+
+def qp_ineq_constraint_2(x, need_hessian=False):
+    f = -x[1]
+    g = np.array([0, -1, 0]).transpose()
+    h = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]]) if need_hessian else None
+    return f, g, h
+
+
+def qp_ineq_constraint_3(x, need_hessian=False):
+    f = -x[2]
+    g = np.array([0, 0, -1]).transpose()
+    h = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]]) if need_hessian else None
+    return f, g, h
+
+
+def lp(x, need_hessian=False):
+    f = -x[0] - x[1]
+    g = np.array([-1, -1]).transpose()
+    h = np.array([[0, 0], [0, 0]]) if need_hessian else None
+    return f, g, h
+
+
+def lp_ineq_constraint_1(x, need_hessian=False):
+    f = -x[0] - x[1] + 1
+    g = np.array([-1, -1]).transpose()
+    h = np.array([[0, 0], [0, 0]]) if need_hessian else None
+    return f, g, h
+
+
+def lp_ineq_constraint_2(x, need_hessian=False):
+    f = x[1] - 1
+    g = np.array([0, 1]).transpose()
+    h = np.array([[0, 0], [0, 0]]) if need_hessian else None
+    return f, g, h
+
+
+def lp_ineq_constraint_3(x, need_hessian=False):
+    f = x[0] - 2
+    g = np.array([1, 0]).transpose()
+    h = np.array([[0, 0], [0, 0]]) if need_hessian else None
+    return f, g, h
+
+def lp_ineq_constraint_4(x, need_hessian=False):
+    f = -x[1]
+    g = np.array([0, -1]).transpose()
+    h = np.array([[0, 0], [0, 0]]) if need_hessian else None
+    return f, g, h

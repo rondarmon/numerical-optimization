@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import warnings
 
 def plot_contours(f, title, xy_gd=None, xy_newton=None, contour_levels=40, grid_size=300):
     """
@@ -97,5 +97,83 @@ def plot_iterations(
         valid_values_2 = [v for v in obj_values_2 if v is not None]
         ax.plot(range(len(valid_values_2)), valid_values_2, label=label_2)
 
+    ax.legend()
+    plt.show()
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def plot_feasible_set_2d(path_points=None):
+    """
+    Plots the feasible region for a given 2D problem and the path points
+    of an algorithm if provided.
+
+    Parameters:
+    - path_points: List of tuples [(x1, y1), (x2, y2), ...] representing
+                   the path points of an algorithm. Default is None.
+    """
+    d = np.linspace(-2, 4, 300)
+    x, y = np.meshgrid(d, d)
+
+    plt.imshow(
+        ((y >= -x + 1) & (y <= 1) & (x <= 2) & (y >= 0)).astype(int),
+        extent=(x.min(), x.max(), y.min(), y.max()),
+        origin="lower",
+        cmap="Greys",
+        alpha=0.3,
+    )
+
+    x_line = np.linspace(0, 4, 2000)
+    y1 = -x_line + 1
+    y2 = np.ones(x_line.size)
+    y3 = np.zeros(x_line.size)
+    x_boundary = np.ones(x_line.size) * 2
+
+    plt.plot(x_line, y1, 'b-', label=r"$y = -x + 1$")
+    plt.plot(x_line, y2, 'g-', label=r"$y = 1$")
+    plt.plot(x_line, y3, 'r-', label=r"$y = 0$")
+    plt.plot(x_boundary, x_line, 'm-', label=r"$x = 2$")
+
+    x_path, y_path = zip(*path_points)
+    plt.plot(x_path, y_path, label="Algorithm's Path", color="k", marker=".", linestyle="--")
+
+    plt.xlim(0, 3)
+    plt.ylim(0, 2)
+    plt.xlabel(r"$x$")
+    plt.ylabel(r"$y$")
+    plt.title("Feasible Region")
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.0)
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_feasible_set_3d(path_points=None):
+    """
+    Plots the feasible region for a given 3D problem and the path points
+    of an algorithm if provided.
+
+    Parameters:
+    - path_points: numpy array of shape (n, 3) representing the path points
+                   of an algorithm. Default is None.
+    """
+    d = np.linspace(-2, 4, 100)
+    x, y = np.meshgrid(d, d)
+    z = x + y
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(x, y, z, alpha=0.5, cmap='viridis')
+
+    if path_points is not None and path_points.shape[1] == 3:
+        ax.plot(path_points[:, 0], path_points[:, 1], path_points[:, 2], 'o-', color='red',
+                label="Algorithm's Path")
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    ax.set_title('Feasible Region in 3D')
     ax.legend()
     plt.show()
