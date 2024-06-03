@@ -15,6 +15,7 @@ from examples import (
     lp_ineq_constraint_4,
 )
 
+
 class TestInteriorPointMethod(unittest.TestCase):
     START_POINT_qp = np.array([0.1, 0.2, 0.7], dtype=np.float64)
     START_POINT_lp = np.array([0.5, 0.75], dtype=np.float64)
@@ -23,16 +24,15 @@ class TestInteriorPointMethod(unittest.TestCase):
 
     def _print_convergence_info(self, x_s, problem_type, constraints):
         x_star = x_s[-1]
-        print(f"Point of convergence: {x_star}")
-        print(f"Objective value at point of convergence: {problem_type(x_star, False)[0]}")
+        print(f"{problem_type.__name__}, Point of convergence: {x_star}")
+        print(f"{problem_type.__name__}, Value at point of convergence: {problem_type(x_star, False)[0]}")
 
-        # Print the values of x at the point of convergence
         for i, x in enumerate(x_star):
             print(f"x[{i}] at point of convergence: {x}")
 
         for i, constraint in enumerate(constraints, start=1):
             constraint_value = constraint(x_star, False)[0]
-            print(f"{constraint.__name__} value at point of convergence: {constraint_value}")
+            print(f"{constraint.__name__} Value at point of convergence: {constraint_value}")
 
         if problem_type.__name__ == 'qp':
             print(f"Sum of variables at point of convergence: {sum(x_star)}")
@@ -43,7 +43,6 @@ class TestInteriorPointMethod(unittest.TestCase):
             start_point,
             constraints,
             eq_constraint_mat,
-            eq_constraint_val,
     ):
         minimizer = self.minimizer
         x_s, obj_values, outer_x_s, outer_obj_values = minimizer.minimize(
@@ -74,7 +73,6 @@ class TestInteriorPointMethod(unittest.TestCase):
         if problem_type.__name__ == "lp":
             plot_feasible_set_2d(np.array(x_s))
 
-
     def test_qp(self):
         eq_constraint_mat = np.array([1, 1, 1]).reshape(1, -1)
         constraints = [qp_ineq_constraint_1, qp_ineq_constraint_2, qp_ineq_constraint_3]
@@ -83,7 +81,6 @@ class TestInteriorPointMethod(unittest.TestCase):
             self.START_POINT_qp,
             constraints,
             eq_constraint_mat,
-            np.array([1]),
         )
 
     def test_lp(self):
@@ -93,7 +90,7 @@ class TestInteriorPointMethod(unittest.TestCase):
             lp_ineq_constraint_3,
             lp_ineq_constraint_4,
         ]
-        self._test_problem(lp, self.START_POINT_lp, constraints, np.array([]), np.array([]))
+        self._test_problem(lp, self.START_POINT_lp, constraints, np.array([]))
 
 
 if __name__ == "__main__":

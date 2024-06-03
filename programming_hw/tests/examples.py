@@ -71,7 +71,7 @@ def triangles(x, need_hessian=False):
 
     return f, g, h
 
-#
+
 def qp(x, need_hessian=False):
     f = x[0] ** 2 + x[1] ** 2 + (x[2] + 1) ** 2
     g = np.array([2 * x[0], 2 * x[1], 2 * x[2] + 2]).transpose()

@@ -34,16 +34,6 @@ class InteriorPointMinimization:
         return -f, -g, -h
 
     def construct_block_matrix(self,hessian, equality_constraints_matrix):
-        """
-        Constructs a block matrix based on the Hessian and equality constraints matrix.
-
-        Parameters:
-        - hessian: np.ndarray, the Hessian matrix.
-        - equality_constraints_matrix: np.ndarray, the matrix for equality constraints.
-
-        Returns:
-        - block_matrix: np.ndarray, the constructed block matrix.
-        """
         if equality_constraints_matrix.size:
             upper_block = np.concatenate([hessian, equality_constraints_matrix.T], axis=1)
             zero_block_shape = (
@@ -72,37 +62,13 @@ class InteriorPointMinimization:
         max_outer_iterations,
         tolerance_epsilon,
     ):
-        """
-        Perform constrained optimization using an interior-point method.
-
-        Parameters:
-        - objective_func: Callable, the objective function to minimize.
-        - initial_guess: np.ndarray, the initial guess for the optimization variables.
-        - inequality_constraints: list of Callables, the inequality constraints.
-        - equality_constraints_matrix: np.ndarray, the matrix for equality constraints.
-        - step_length: float or str, the step length for line search ("wolfe" for Wolfe conditions).
-        - objective_tolerance: float, tolerance for the objective function convergence.
-        - parameter_tolerance: float, tolerance for the parameter convergence.
-        - max_inner_iterations: int, maximum number of inner iterations.
-        - max_outer_iterations: int, maximum number of outer iterations.
-        - tolerance_epsilon: float, epsilon tolerance for stopping criteria.
-
-        Returns:
-        - x_history: list of np.ndarray, history of optimization variables.
-        - objective_values: list of float, history of objective values.
-        - outer_x_history: list of np.ndarray, history of outer loop optimization variables.
-        - outer_objective_values: list of float, history of outer loop objective values.
-        """
-
         current_x = initial_guess
         objective_value, gradient, hessian = objective_func(current_x, True)
         phi_value, phi_gradient, phi_hessian = self.phi(inequality_constraints, current_x)
         t = self.T
 
-        x_history = [initial_guess]
-        objective_values = [objective_value]
-        outer_x_history = [initial_guess]
-        outer_objective_values = [objective_value]
+        x_history, outer_x_history = [initial_guess], [initial_guess]
+        objective_values, outer_objective_values = [objective_value], [objective_value]
 
         objective_value = t * objective_value + phi_value
         gradient = t * gradient + phi_gradient
@@ -121,21 +87,21 @@ class InteriorPointMinimization:
 
                 search_direction = np.linalg.solve(block_matrix, eq_vector)[: len(current_x)]
                 lambda_value = np.sqrt(
-                    np.dot(search_direction.T, np.dot(hessian, search_direction)),
+                    np.dot(search_direction.T, np.dot(hessian, search_direction))
                 )
 
-                if 0.5 * lambda_value ** 2 < objective_tolerance:
+                if 0.5 * lambda_value ** 2 < objective_tolerance or \
+                        (
+                                inner_iter != 0 and
+                                previous_objective_value - objective_value < objective_tolerance
+                        ):
                     break
 
-                if inner_iter != 0 and (
-                        previous_objective_value - objective_value < objective_tolerance
-                ):
-                    break
-
-                if step_length == "wolfe":
-                    alpha = self.__wolfe(objective_func, search_direction, current_x)
-                else:
-                    alpha = step_length
+                alpha = self.__wolfe(
+                    objective_func,
+                    search_direction,
+                    current_x,
+                ) if step_length == "wolfe" else step_length
 
                 previous_x = current_x
                 previous_objective_value = objective_value
@@ -160,4 +126,6 @@ class InteriorPointMinimization:
             t *= self.MU
 
         return x_history, objective_values, outer_x_history, outer_objective_values
+
+
 

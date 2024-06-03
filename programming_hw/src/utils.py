@@ -138,7 +138,6 @@ def plot_feasible_set_2d(path_points=None):
 
     x_path, y_path = zip(*path_points)
     plt.plot(x_path, y_path, label="Algorithm's Path", color="k", marker=".", linestyle="--")
-
     plt.xlim(0, 3)
     plt.ylim(0, 2)
     plt.xlabel(r"$x$")
@@ -151,29 +150,35 @@ def plot_feasible_set_2d(path_points=None):
 
 
 def plot_feasible_set_3d(path_points=None):
-    """
-    Plots the feasible region for a given 3D problem and the path points
-    of an algorithm if provided.
-
-    Parameters:
-    - path_points: numpy array of shape (n, 3) representing the path points
-                   of an algorithm. Default is None.
-    """
-    d = np.linspace(-2, 4, 100)
+    d = np.linspace(0, 1, 100)
     x, y = np.meshgrid(d, d)
-    z = x + y
+    z = 1 - x - y
+    z = np.where(z >= 0, z, np.nan)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.plot_surface(x, y, z, alpha=0.5, cmap='viridis')
+
+    ax.plot_surface(x, y, z, alpha=0.5, color='blue')
 
     if path_points is not None and path_points.shape[1] == 3:
-        ax.plot(path_points[:, 0], path_points[:, 1], path_points[:, 2], 'o-', color='red',
-                label="Algorithm's Path")
+        ax.plot(
+            path_points[:, 0],
+            path_points[:, 1],
+            path_points[:, 2],
+            'o-',
+            color='black',
+        )
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
-    ax.set_title('Feasible Region in 3D')
-    ax.legend()
+
+    if path_points is not None:
+        final_point = path_points[-1]
+        convergence_value = np.sum(final_point)
+        title = f'Value at point of convergence: {convergence_value:.3}, constraint holds'
+    else:
+        title = 'Feasible Region in 3D'
+
+    ax.set_title(title)
     plt.show()
