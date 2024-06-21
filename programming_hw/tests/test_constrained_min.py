@@ -45,7 +45,7 @@ class TestInteriorPointMethod(unittest.TestCase):
             eq_constraint_mat,
     ):
         minimizer = self.minimizer
-        x_s, obj_values, outer_x_s, outer_obj_values = minimizer.minimize(
+        x_s, obj_values, outer_x_s, outer_obj_values = minimizer.interior_pt(
             problem_type,
             start_point,
             constraints,

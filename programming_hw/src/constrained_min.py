@@ -49,7 +49,7 @@ class InteriorPointMinimization:
             block_matrix = hessian
         return block_matrix
 
-    def minimize(
+    def interior_pt(
         self,
         objective_func,
         initial_guess,
